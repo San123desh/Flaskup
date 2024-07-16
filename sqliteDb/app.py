@@ -48,27 +48,27 @@ def single_book(id):
         for r in rows:
             book = r
         if book is not None:
-            return jsonify(dict(id=book[0], author=book[1], publication_year=book[2], title=book[3])), 200
+            return jsonify(book), 200
         else:
             return jsonify({"error": "Book not found"}), 404
 
     
     if request.method == 'PUT':
-                sql = """UPDATE book SET title=?, publication_year=?,author=? WHERE id=?"""
+            sql = """UPDATE book SET title=?, publication_year=?,author=? WHERE id=?"""
 
-                author = request.form['author']
-                publication_year = request.form['publication_year']
-                title = request.form['title']
-
-                updated_book = {
-                    "id": id,
-                    "author": book['author'],
-                    "title": book['title'],
-                    "publication_year": book['publication_year']
-                }
-                conn.execute(sql, (author, publication_year, title,id))
-                conn.commit()
-                return jsonify(updated_book), 200
+            data = request.json  # Fetch the JSON data from the request
+            author = data['author']
+            publication_year = data['publication_year']
+            title = data['title']
+            updated_book = {
+                "id": id,
+                "author": author,
+                "title": title,
+                "publication_year": publication_year
+            }
+            conn.execute(sql, (author, publication_year, title,id))
+            conn.commit()
+            return jsonify(updated_book), 200
     
     
     if request.method == 'DELETE':
@@ -77,9 +77,6 @@ def single_book(id):
         conn.commit()
         return jsonify({"message": "Book deleted successfully"}), 204
     
-
-
-
 
 if __name__ == '__main__':
     app.run()
